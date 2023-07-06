@@ -1,10 +1,3 @@
-/*A dating app typically incorporates various functionalities to facilitate connections, interactions, and engagement between users. Here are some main functionalities commonly found in dating apps:
-User Profiles: Allow users to create and manage their profiles, including basic information, photos, and personal interests. Users can also customize their preferences and set criteria for potential matches.
-Matching Algorithm: Employ a matching algorithm that suggests potential matches based on user preferences, interests, location, and other relevant factors. The algorithm aims to connect users with compatible profiles.
-Notifications: Offer real-time chat functionality, allowing users to engage in instant messaging with other users who are online. Additionally, push notifications can be sent to users to inform them of new messages, likes, matches, or other relevant activities.
-Social Media Integration: Allow users to link their social media accounts (e.g., Facebook, Instagram) to import additional information and photos, providing a more comprehensive view of their interests and lifestyle.
-Swipe and Match: Incorporate a swipe-based interface where users can swipe left or right on profiles to indicate interest or disinterest. When two users both express interest in each other by swiping right, it results in a match, enabling them to connect and initiate conversations.*/
-
 // ? libraries: 
 
 #include <iostream>
@@ -14,6 +7,7 @@ Swipe and Match: Incorporate a swipe-based interface where users can swipe left 
 #include <fstream>
 #include <stdlib.h>
 #include <algorithm>
+#include <ctime>
 
 // ? global variables :
 
@@ -28,6 +22,7 @@ std::vector <std::string> sexs;
 std::vector <std::string> passtest;
 std::vector <std::string> hobbies;
 std::vector <std::string> jobs;
+std::vector <std::string> notification;
 std::string for_now_user;
 int finding_index;
 // ? classes:
@@ -75,23 +70,36 @@ class profile
         void verify_them_all();
         void add_it_to_database();
         void myProfileSection(int fin);
+        void match_profile_section(int fin);
+        //friend void Display(notifications ob1, discover ob2, profile ob3);
+};
+
+class notifications
+{
+    public:
+        void go_for_notification(std::string name);
+        void show_all_notifications();
+        //friend void Display(notifications ob1, discover ob2, profile ob3);
 };
 
 class discover
 {
     private:
-        std::vector<int> selectio_n_one;
-        std::vector<int> selectio_n_two;
         int num_profile;
     public:
-        void first_selection();
-        void second_selection();
+        friend void Display(notifications ob1, discover ob2, profile ob3);
 };
+
 
 // ? no reffrence functions :
 
 void load_all();
 void main_menu();
+
+void print(std::vector<int> vec)
+{
+    for(int x : vec) std::cout << x << std::endl;
+}
 
 void clear_all_vectors()
 {
@@ -199,6 +207,15 @@ int lineaSearch_two(std::vector<std::string> str1, std::string target)
     return 0;
 }
 
+int lineaSearch_three(std::vector<int> str1, int target)
+{
+    for(int i = 0; i < str1.size(); i++)
+    {
+        if(str1[i] == target) return i;
+    }
+    return 0;
+}
+
 void stor_data_string(std::vector<std::string> str, std::string filename)
 {
     std::ofstream file(filename);
@@ -276,6 +293,7 @@ std::string captcha()
 
 void load_all()
 {
+    clear_all_vectors();
     load_values_from_datebase_int(ages, "database/ages.txt");
     load_values_from_datebase_str(num, "database/phone numbers.txt");
     load_values_from_datebase_str(usernames, "database/usernames.txt");
@@ -290,6 +308,9 @@ void load_all()
 
 void main_menu()
 {
+    profile o1;
+    notifications o2;
+    discover o3;
     binder();
     std::cout << "hello " << for_now_user << ',' << std::endl;
     std::cout << "(1): profile \n"<< "(2): discover. \n";
@@ -306,11 +327,20 @@ void main_menu()
     }
     case 2:
     {
-        discover oo5;
-        oo5.first_selection();
-        oo5.second_selection();
+        Display(o2, o3, o1);
+    }
+    case 3:
+    {
+        o2.show_all_notifications();
     }
     }
+}
+
+std::string current_time()
+{
+    std::time_t currentTime = std::time(nullptr);
+    std::string timeString = std::ctime(&currentTime);
+    return timeString;
 }
 
 // ? class refference functions:
@@ -344,7 +374,6 @@ void profile :: set_them_all()
         std::cout << "confirme the password: ";
     myCursor();
     std::cin >> clone_password;
-    num_of_users ++;
 }
 
 void profile :: verify_them_all()
@@ -450,6 +479,17 @@ void profile :: myProfileSection(int fin)
             main_menu();
         }
     }
+}
+
+void profile :: match_profile_section(int fin)
+{
+    std::cout << "first name: " << first_names[fin] << std::endl;
+    std::cout << "last name: " << last_names[fin] << std::endl;
+    std::cout << "username: " << usernames[fin] << std::endl;
+    std::cout << "sex: " << sexs[fin] << std::endl;
+    std::cout << "age: " << ages[fin] << std::endl;
+    std::cout << "hobbie: " << hobbies[fin] << std::endl;
+    std::cout << "job: " << jobs[fin] << std::endl;
 }
 
 void login :: get_it()
@@ -622,9 +662,63 @@ void change :: ver_change_email()
     }
 }
 
+void notifications :: go_for_notification(std::string name)
+{
+    std::string msg = "you try match with: " + name + " the " + current_time();
+    notification.push_back(msg);
+}
+
+void notifications :: show_all_notifications()
+{
+    std::cout << "****************notifications*****************";
+    for(auto x : notification) std::cout << x << std::endl;
+    std::cout << "****************notifications*****************";
+    main_menu();
+}
+
+void Display(notifications ob1, discover ob2, profile ob3)
+{
+    load_all();
+    int profile(1);
+    int size = ages.size();
+    for(int i = 0; i < size; i++)
+    {
+        if(i == finding_index) continue;
+        if(sexs[i] != sexs[finding_index])
+        {
+        std::cout << "--------profile N°" << profile << "-------------" << std::endl;
+        ob3.match_profile_section(i);
+        char my_choice_four;
+        std::cout << "match ?? (y : yes/n : no/g : go back):";
+        myCursor();
+        std::cin >> my_choice_four;
+        switch (static_cast<int>(my_choice_four))
+        {
+        case 121:
+            {
+                ob1.go_for_notification(first_names[i] + " " + last_names[i]);
+                profile++;
+                continue;
+            }
+            break;
+        case 110:
+        {
+            profile++;
+            continue;
+        }
+        case 103:
+        {
+            main_menu();
+            break;
+        }
+        }
+        }
+        else continue;
+    }
+    main_menu();
+}
 
 // ? main function:
-
 int main ()
 {
     clear_all_vectors();
