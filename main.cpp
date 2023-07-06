@@ -25,7 +25,18 @@ std::vector <std::string> jobs;
 std::vector <std::string> notification;
 std::string for_now_user;
 int finding_index;
+bool end(false);
 // ? classes:
+
+class social_media
+{
+    private:
+        std::string instagram;
+        std::string twiter;
+        std::string facebook;
+    public:
+        social_media();
+};
 
 class change
 {
@@ -306,6 +317,11 @@ void load_all()
     load_values_from_datebase_str(hobbies, "database/hobbies.txt");
 }
 
+int for_end(bool en)
+{
+    return 0;
+}
+
 void main_menu()
 {
     profile o1;
@@ -314,7 +330,7 @@ void main_menu()
     binder();
     std::cout << "hello " << for_now_user << ',' << std::endl;
     std::cout << "(1): profile \n"<< "(2): discover. \n";
-    std::cout << "(3): notification \n"<< "(4): list of matches \n"<< "(5): Social Media Integration \n"<< "(6): Exite. ";
+    std::cout << "(3): notification \n"<< "(4): Social Media Integration \n"<< "(5): Exite. ";
     int my_choice_two;
     myCursor();
     std::cin >> my_choice_two;
@@ -333,6 +349,14 @@ void main_menu()
     {
         o2.show_all_notifications();
     }
+    case 4:
+    {
+        social_media o4;
+        main_menu();
+    }
+    case 5:
+        end = true;
+        for_end(end);
     }
 }
 
@@ -341,6 +365,48 @@ std::string current_time()
     std::time_t currentTime = std::time(nullptr);
     std::string timeString = std::ctime(&currentTime);
     return timeString;
+}
+
+void Display(notifications ob1, discover ob2, profile ob3)
+{
+    load_all();
+    int profile(1);
+    int size = ages.size();
+    for(int i = 0; i < size; i++)
+    {
+        if(i == finding_index) continue;
+        if(sexs[i] != sexs[finding_index])
+        {
+        std::cout << "--------profile N°" << profile << "-------------" << std::endl;
+        ob3.match_profile_section(i);
+        char my_choice_four;
+        std::cout << "match ?? (y : yes/n : no/g : go back):";
+        myCursor();
+        std::cin >> my_choice_four;
+        switch (static_cast<int>(my_choice_four))
+        {
+        case 121:
+            {
+                ob1.go_for_notification(first_names[i] + " " + last_names[i]);
+                profile++;
+                continue;
+            }
+            break;
+        case 110:
+        {
+            profile++;
+            continue;
+        }
+        case 103:
+        {
+            main_menu();
+            break;
+        }
+        }
+        }
+        else continue;
+    }
+    main_menu();
 }
 
 // ? class refference functions:
@@ -671,51 +737,22 @@ void notifications :: go_for_notification(std::string name)
 void notifications :: show_all_notifications()
 {
     std::cout << "****************notifications*****************";
-    for(auto x : notification) std::cout << x << std::endl;
+    if(notification.empty())
+        std::cout << "nothing for now :]" << std::endl;
+    else
+        for(auto x : notification) 
+            std::cout << x << std::endl;
     std::cout << "****************notifications*****************";
     main_menu();
 }
 
-void Display(notifications ob1, discover ob2, profile ob3)
+social_media :: social_media()
 {
-    load_all();
-    int profile(1);
-    int size = ages.size();
-    for(int i = 0; i < size; i++)
-    {
-        if(i == finding_index) continue;
-        if(sexs[i] != sexs[finding_index])
-        {
-        std::cout << "--------profile N°" << profile << "-------------" << std::endl;
-        ob3.match_profile_section(i);
-        char my_choice_four;
-        std::cout << "match ?? (y : yes/n : no/g : go back):";
-        myCursor();
-        std::cin >> my_choice_four;
-        switch (static_cast<int>(my_choice_four))
-        {
-        case 121:
-            {
-                ob1.go_for_notification(first_names[i] + " " + last_names[i]);
-                profile++;
-                continue;
-            }
-            break;
-        case 110:
-        {
-            profile++;
-            continue;
-        }
-        case 103:
-        {
-            main_menu();
-            break;
-        }
-        }
-        }
-        else continue;
-    }
-    main_menu();
+    std::cout << "---------Social-Media-Accounts---------" << std::endl;
+    std::cout << "instagram  " << "https://www.instagram.com/" << usernames[finding_index] << std::endl;
+    std::cout << "twitter  " << '@' << usernames[finding_index] << std::endl;
+    std::cout << "facebook  " << "https://www.facebook.com/" << usernames[finding_index] << std::endl;
+    std::cout << "---------Social-Media-Accounts---------" << std::endl;
 }
 
 // ? main function:
